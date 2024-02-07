@@ -41,7 +41,6 @@ namespace Stride.TextureConverter
             NativeLibraryHelper.PreloadLibrary("PVRTexLib", type);
             NativeLibraryHelper.PreloadLibrary("PvrttWrapper", type);
             NativeLibraryHelper.PreloadLibrary("FreeImage", type);
-            NativeLibraryHelper.PreloadLibrary("FreeImageNET", type);
         }
 
         /// <summary>
