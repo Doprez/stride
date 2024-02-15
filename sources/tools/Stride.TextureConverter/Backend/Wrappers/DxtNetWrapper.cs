@@ -170,43 +170,6 @@ namespace Stride.TextureConverter.DxtWrapper
 
 
     [Flags]
-    internal enum WIC_FLAGS
-    {
-        WIC_FLAGS_NONE = 0x0,
-
-        WIC_FLAGS_FORCE_RGB = 0x1,
-        // Loads DXGI 1.1 BGR formats as DXGI_FORMAT_R8G8B8A8_UNORM to avoid use of optional WDDM 1.1 formats
-
-        WIC_FLAGS_NO_X2_BIAS = 0x2,
-        // Loads DXGI 1.1 X2 10:10:10:2 format as DXGI_FORMAT_R10G10B10A2_UNORM
-
-        WIC_FLAGS_NO_16BPP = 0x4,
-        // Loads 565, 5551, and 4444 formats as 8888 to avoid use of optional WDDM 1.2 formats
-
-        WIC_FLAGS_ALLOW_MONO = 0x8,
-        // Loads 1-bit monochrome (black & white) as R1_UNORM rather than 8-bit grayscale
-
-        WIC_FLAGS_ALL_FRAMES = 0x10,
-        // Loads all images in a multi-frame file, converting/resizing to match the first frame as needed, defaults to 0th frame otherwise
-
-        WIC_FLAGS_IGNORE_SRGB = 0x20,
-        // Ignores sRGB metadata if present in the file
-
-        WIC_FLAGS_DITHER = 0x10000,
-        // Use ordered 4x4 dithering for any required conversions
-
-        WIC_FLAGS_DITHER_DIFFUSION = 0x20000,
-        // Use error-diffusion dithering for any required conversions
-
-        WIC_FLAGS_FILTER_POINT = 0x100000,
-        WIC_FLAGS_FILTER_LINEAR = 0x200000,
-        WIC_FLAGS_FILTER_CUBIC = 0x300000,
-        WIC_FLAGS_FILTER_FANT = 0x400000, // Combination of Linear and Box filter
-                                          // Filtering mode to use for any required image resizing (only needed when loading arrays of differently sized images; defaults to Fant)
-    };
-
-
-    [Flags]
     internal enum TEX_COMPRESS_FLAGS
     {
         TEX_COMPRESS_DEFAULT = 0,
@@ -522,9 +485,6 @@ namespace Stride.TextureConverter.DxtWrapper
         private extern static uint dxtLoadTGAFile(String filePath, out TexMetadata metadata, IntPtr image);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
-        private extern static uint dxtLoadWICFile(String filePath, WIC_FLAGS flags, out TexMetadata metadata, IntPtr image);
-
-        [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
         private extern static bool dxtIsCompressed(DXGI_FORMAT fmt);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
@@ -536,7 +496,7 @@ namespace Stride.TextureConverter.DxtWrapper
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
         private extern static uint dxtCompress(ref DxtImage srcImage, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, IntPtr cImage);
 
-        [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
+        [DllImport("DxtWrapper", EntryPoint = "_Z16dxtCompressArrayPKN7DirectX5ImageEiRKNS_11TexMetadataE11DXGI_FORMATNS_18TEX_COMPRESS_FLAGSEfRNS_12ScratchImageE", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
         private extern static uint dxtCompressArray(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, DXGI_FORMAT format, TEX_COMPRESS_FLAGS compress, float alphaRef, IntPtr cImages);
 
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
@@ -569,7 +529,7 @@ namespace Stride.TextureConverter.DxtWrapper
         [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
         private extern static uint dxtComputeNormalMap(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, CNMAP_FLAGS flags, float amplitude, DXGI_FORMAT format, IntPtr normalMaps );
 
-        [DllImport("DxtWrapper", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
+        [DllImport("DxtWrapper", EntryPoint = "_Z19dxtPremultiplyAlphaPKN7DirectX5ImageEiRKNS_11TexMetadataENS_17TEX_PMALPHA_FLAGSERNS_12ScratchImageE", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode), SuppressUnmanagedCodeSecurity]
         private extern static uint dxtPremultiplyAlpha(DxtImage[] srcImages, int nimages, ref TexMetadata metadata, TEX_PREMULTIPLY_ALPHA_FLAGS flags, IntPtr result);
 
         public static void ComputePitch(DXGI_FORMAT fmt, int width, int height, out int rowPitch, out int slicePitch, CP_FLAGS flags)
@@ -585,11 +545,6 @@ namespace Stride.TextureConverter.DxtWrapper
         public static HRESULT LoadTGAFile(String filePath, out TexMetadata metadata, ScratchImage image)
         {
             return HandleHRESULT(dxtLoadTGAFile(filePath, out metadata, image.ptr));
-        }
-
-        public static HRESULT LoadWICFile(String filePath, WIC_FLAGS flags, out TexMetadata metadata, ScratchImage image)
-        {
-            return HandleHRESULT(dxtLoadWICFile(filePath, flags, out metadata, image.ptr));
         }
 
         public static HRESULT SaveToDDSFile(ref DxtImage dxtImage, DDS_FLAGS flags, string szFile)
