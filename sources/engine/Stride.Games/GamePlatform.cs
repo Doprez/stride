@@ -115,11 +115,18 @@ namespace Stride.Games
         /// </summary>
         public bool IsBlockingRun { get; protected set; }
 
-        public void Run(GameContext gameContext)
+        public void Run(GameContext gameContext, GameWindow window = null)
         {
             IsBlockingRun = !gameContext.IsUserManagingRun;
 
-            gameWindow = CreateWindow(gameContext);
+            if (window == null)
+            {
+                gameWindow = CreateWindow(gameContext);
+            }
+            else
+            {
+                gameWindow = window;
+            }
 
             // Register on Activated 
             gameWindow.Activated += OnActivated;

@@ -71,7 +71,7 @@ namespace Stride.Engine
         /// Gets the input manager.
         /// </summary>
         /// <value>The input.</value>
-        public InputManager Input { get; internal set; }
+        public InputManager Input { get; set; }
 
         /// <summary>
         /// Gets the scene system.

@@ -402,7 +402,7 @@ namespace Stride.Games
         /// </summary>
         /// <param name="gameContext">The window Context for this game.</param>
         /// <exception cref="System.InvalidOperationException">Cannot run this instance while it is already running</exception>
-        public void Run(GameContext gameContext = null)
+        public void Run(GameContext gameContext = null, GameWindow gameWindow = null)
         {
             if (IsRunning)
             {
@@ -446,7 +446,7 @@ namespace Stride.Games
                 Context.RequestedGraphicsProfile = graphicsDeviceManagerImpl.PreferredGraphicsProfile;
                 Context.DeviceCreationFlags = graphicsDeviceManagerImpl.DeviceCreationFlags;
 
-                gamePlatform.Run(Context);
+                gamePlatform.Run(Context, gameWindow);
 
                 if (gamePlatform.IsBlockingRun)
                 {
