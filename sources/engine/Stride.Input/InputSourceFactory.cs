@@ -48,6 +48,9 @@ namespace Stride.Input
                     var winformsContext = (GameContextWinforms)context;
                     return new InputSourceWinforms(winformsContext.Control);
 #endif
+                // Assume that the user knows whats needed if they set the context to Custom
+                case AppContextType.Custom:
+                    return null;
                 default:
                     throw new InvalidOperationException("GameContext type is not supported by the InputManager");
             }

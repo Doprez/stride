@@ -120,7 +120,7 @@ namespace Stride.Games
             deviceChangeWillBeFullScreen = null;
         }
 
-        protected internal override void SetSupportedOrientations(DisplayOrientation orientations)
+        public override void SetSupportedOrientations(DisplayOrientation orientations)
         {
             // Desktop doesn't have orientation (unless on Windows 8?)
         }

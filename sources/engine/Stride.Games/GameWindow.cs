@@ -225,7 +225,7 @@ namespace Stride.Games
 
         #region Methods
 
-        protected internal abstract void Initialize(GameContext gameContext);
+        public abstract void Initialize(GameContext gameContext);
 
         public bool Exiting;
 
@@ -263,7 +263,7 @@ namespace Stride.Games
 
         public IServiceRegistry Services { get; set; }
 
-        protected internal abstract void SetSupportedOrientations(DisplayOrientation orientations);
+        public abstract void SetSupportedOrientations(DisplayOrientation orientations);
 
         protected void OnActivated(object source, EventArgs e)
         {
@@ -332,7 +332,7 @@ namespace Stride.Games
 
     public abstract class GameWindow<TK> : GameWindow
     {
-        protected internal sealed override void Initialize(GameContext gameContext)
+        public sealed override void Initialize(GameContext gameContext)
         {
             var context = gameContext as GameContext<TK>;
             if (context != null)
