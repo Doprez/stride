@@ -1,10 +1,8 @@
-﻿using System.ComponentModel;
-using Stride.BepuPhysics.Navigation.Processors;
+﻿using Stride.BepuPhysics.Navigation.Processors;
 using Stride.Core;
 using Stride.Core.Mathematics;
 using Stride.Engine;
 using Stride.Engine.Design;
-using Stride.Games;
 
 namespace Stride.BepuPhysics.Navigation.Components;
 [DataContract(nameof(RecastNavigationComponent))]
@@ -109,7 +107,6 @@ public class RecastNavigationComponent : StartupScript
             Move(deltaTime);
             Rotate();
         }
-
     }
 
     private void Move(float deltaTime)
@@ -120,30 +117,38 @@ public class RecastNavigationComponent : StartupScript
             return;
         }
 
-        var position = Entity.Transform.WorldMatrix.TranslationVector;
+        var targetPosition = Entity.Transform.WorldMatrix.TranslationVector;
 
         var nextWaypointPosition = Path[0];
-        var distanceToWaypoint = Vector3.Distance(position, nextWaypointPosition);
-
-        // When the distance between the character and the next waypoint is large enough, move closer to the waypoint
-        if (distanceToWaypoint > 0.1)
+        targetPosition = Vector3.MoveTo(targetPosition, nextWaypointPosition, Speed * deltaTime);
+        if (targetPosition == nextWaypointPosition && Path.Count > 0)
         {
-            var direction = nextWaypointPosition - position;
-            direction.Normalize();
-            direction *= Speed * deltaTime;
-
-            position += direction;
-        }
-        else
-        {
-            if (Path.Count > 0)
-            {
-                // need to test if storing the index in Pathfinder would be faster than this.
-                Path.RemoveAt(0);
-            }
+            // need to test if storing the index in Pathfinder would be faster than this.
+            Path.RemoveAt(0);
         }
 
-        Entity.Transform.Position = position;
+        // Handle the scenario where the agent has a parent.
+        ParentToLocal(ref targetPosition, Entity);
+        Entity.Transform.Position = targetPosition;
+    }
+
+    /// <summary>
+    /// Recursively checks parents to convert a world position to a local position.
+    /// Returns the local possition if no parents exist.
+    /// </summary>
+    /// <param name="worldPosition"></param>
+    /// <param name="entity"></param>
+    private void ParentToLocal(ref Vector3 worldPosition, Entity entity)
+    {
+        var parent = entity.GetParent();
+
+        if (parent == null)
+        {
+            return;
+        }
+
+        worldPosition -= parent.Transform.WorldMatrix.TranslationVector;
+        ParentToLocal(ref worldPosition, parent);
     }
 
     private void Rotate()
@@ -159,24 +164,4 @@ public class RecastNavigationComponent : StartupScript
 
         Entity.Transform.Rotation = Quaternion.RotationY(-angle);
     }
-}
-
-public enum NavigationState
-{
-    /// <summary>
-    /// Tells the <see cref="RecastNavigationProcessor"/> a plan needs to be queued. This is used internally to prevent multiple path calculations per frame.
-    /// </summary>
-    QueuePathPlanning,
-    /// <summary>
-    /// Tells the <see cref="RecastNavigationProcessor"/> to set a new path at the next available opportunity.
-    /// </summary>
-    PlanningPath,
-    /// <summary>
-    /// Tells the <see cref="RecastNavigationProcessor"/> the agent has a path.
-    /// </summary>
-    PathIsReady,
-    /// <summary>
-    /// Tells the <see cref="RecastNavigationProcessor"/> the agent does not have a valid path.
-    /// </summary>
-    PathIsInvalid,
 }
