@@ -24,6 +24,7 @@ namespace Stride.BepuPhysics.Navigation.Processors;
 public class RecastMeshSystem : GameSystemBase
 {
     public TimeSpan LastShapeCacheTime { get; private set; }
+    public TimeSpan LastNavMeshBuildTime { get; private set; }
 
     public const int MaxPolys = 256;
     public const int MaxSmooth = 2048;
@@ -60,6 +61,8 @@ public class RecastMeshSystem : GameSystemBase
         {
             _navMesh = _runningRebuild.Result;
             _runningRebuild = null;
+            LastNavMeshBuildTime = _stopwatch.Elapsed;
+            _stopwatch.Reset();
         }
     }
 
@@ -83,7 +86,6 @@ public class RecastMeshSystem : GameSystemBase
         {
             var collidable = e.Current.Value;
 
-#warning should we really ignore all bodies ?
             if (collidable is BodyComponent)
                 continue;
 
@@ -96,7 +98,6 @@ public class RecastMeshSystem : GameSystemBase
             asyncInput.Matrices.Add((collidable.Entity.Transform.WorldMatrix, shapeCount));
         }
 
-        _stopwatch.Stop();
         LastShapeCacheTime = _stopwatch.Elapsed;
         _stopwatch.Reset();
 
@@ -125,6 +126,7 @@ public class RecastMeshSystem : GameSystemBase
             tileSize = _navSettings.BuildSettings.TileSize,
         };
         var token = _rebuildingTask.Token;
+        _stopwatch.Start();
         var task = Task.Run(() => _navMesh = CreateNavMesh(settingsCopy, asyncInput, _navSettings.UsableThreadCount, token), token);
         _runningRebuild = task;
         return task;
@@ -376,7 +378,7 @@ public class RecastMeshSystem : GameSystemBase
             RcVec3f moveTgt = RcVec.Mad(iterPos, delta, len);
 
             // Move
-            navQuery.MoveAlongSurface(polys[0], iterPos, moveTgt, filter, out var result, visited, out nvisited, 16);
+            navQuery.MoveAlongSurface(polys[0], iterPos, moveTgt, filter, out var result, visited, out nvisited, visited.Length);
 
             iterPos = result;
 
