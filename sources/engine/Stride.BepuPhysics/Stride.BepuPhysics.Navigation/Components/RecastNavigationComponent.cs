@@ -157,11 +157,8 @@ public class RecastNavigationComponent : StartupScript
         {
             return;
         }
+
         var position = Entity.Transform.WorldMatrix.TranslationVector;
-
-        float angle = (float)Math.Atan2(Path[0].Z - position.Z,
-            Path[0].X - position.X);
-
-        Entity.Transform.Rotation = Quaternion.RotationY(-angle);
+        Entity.Transform.Rotation = Quaternion.LookRotation(Vector3.Normalize(Path[0] - position), Vector3.UnitY);
     }
 }
