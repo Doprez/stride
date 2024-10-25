@@ -270,6 +270,39 @@ public class RecastMeshSystem : GameSystemBase
         return Math.Min(DtUtils.Ilog2(DtUtils.NextPow2(num * num2)), 14);
     }
 
+    /// <summary>
+    /// Tries to find a path from the start to the end.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="polys"></param>
+    /// <param name="smoothPath"></param>
+    /// <param name="pathfindingSettings"></param>
+    /// <returns></returns>
+    public bool TryFindPath(Vector3 start, Vector3 end, ref List<long> polys, ref List<Vector3> smoothPath, PathfindingSettings pathfindingSettings)
+    {
+        if (_navMesh is null) return false;
+
+        var queryFilter = new DtQueryDefaultFilter();
+        var dtNavMeshQuery = new DtNavMeshQuery(_navMesh);
+
+        dtNavMeshQuery.FindNearestPoly(start.ToDotRecastVector(), _polyPickExt, queryFilter, out long startRef, out _, out _);
+
+        dtNavMeshQuery.FindNearestPoly(end.ToDotRecastVector(), _polyPickExt, queryFilter, out long endRef, out _, out _);
+        // find the nearest point on the navmesh to the start and end points
+        var result = FindFollowPath(dtNavMeshQuery, startRef, endRef, start.ToDotRecastVector(), end.ToDotRecastVector(), queryFilter, true, ref polys, polys.Count, ref smoothPath, pathfindingSettings);
+
+        return result.Succeeded();
+    }
+
+    /// <summary>
+    /// Tries to find a path from the start to the end. This uses the default <see cref="PathfindingSettings"/>.
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="polys"></param>
+    /// <param name="smoothPath"></param>
+    /// <returns></returns>
     public bool TryFindPath(Vector3 start, Vector3 end, ref List<long> polys, ref List<Vector3> smoothPath)
     {
         if (_navMesh is null) return false;
@@ -281,7 +314,7 @@ public class RecastMeshSystem : GameSystemBase
 
         dtNavMeshQuery.FindNearestPoly(end.ToDotRecastVector(), _polyPickExt, queryFilter, out long endRef, out _, out _);
         // find the nearest point on the navmesh to the start and end points
-        var result = FindFollowPath(dtNavMeshQuery, startRef, endRef, start.ToDotRecastVector(), end.ToDotRecastVector(), queryFilter, true, ref polys, polys.Count, ref smoothPath, _navSettings);
+        var result = FindFollowPath(dtNavMeshQuery, startRef, endRef, start.ToDotRecastVector(), end.ToDotRecastVector(), queryFilter, true, ref polys, polys.Count, ref smoothPath, _navSettings.PathfindingSettings);
 
         return result.Succeeded();
     }
@@ -311,7 +344,7 @@ public class RecastMeshSystem : GameSystemBase
         return verts;
     }
 
-    public static DtStatus FindFollowPath(DtNavMeshQuery navQuery, long startRef, long endRef, RcVec3f startPt, RcVec3f endPt, IDtQueryFilter filter, bool enableRaycast, ref List<long> polys, int pathIterPolyCount, ref List<Vector3> smoothPath, RecastNavigationConfiguration navSettings)
+    public static DtStatus FindFollowPath(DtNavMeshQuery navQuery, long startRef, long endRef, RcVec3f startPt, RcVec3f endPt, IDtQueryFilter filter, bool enableRaycast, ref List<long> polys, int pathIterPolyCount, ref List<Vector3> smoothPath, PathfindingSettings navSettings)
     {
         if (startRef == 0 || endRef == 0)
         {
@@ -342,7 +375,7 @@ public class RecastMeshSystem : GameSystemBase
         smoothPath.Clear();
         smoothPath.Add(iterPos.ToStrideVector());
 
-        Span<long> visited = stackalloc long[navSettings.PathfindingSettings.MaxAllowedVisitedTiles];
+        Span<long> visited = stackalloc long[navSettings.MaxAllowedVisitedTiles];
         int nvisited = 0;
 
         // Move towards target a small advancement at a time until target reached or
