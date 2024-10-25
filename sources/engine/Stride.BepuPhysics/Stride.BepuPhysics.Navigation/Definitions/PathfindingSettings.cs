@@ -4,7 +4,7 @@
 using Stride.Core;
 
 namespace Stride.BepuPhysics.Navigation.Definitions;
-[DataContract(nameof(PathfindingSettings))]
+[DataContract()]
 [Display("Pathfinding Settings")]
 public class PathfindingSettings
 {
