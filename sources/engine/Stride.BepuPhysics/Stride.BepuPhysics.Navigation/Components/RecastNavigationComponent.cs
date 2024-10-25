@@ -104,12 +104,11 @@ public class RecastNavigationComponent : StartupScript
         // This allows  the user to determine if the agent should stop moving if the path is no longer valid.
         if (IsMoving)
         {
-            Move(deltaTime);
-            Rotate();
+            MoveAndRotate(deltaTime);
         }
     }
 
-    private void Move(float deltaTime)
+    private void MoveAndRotate(float deltaTime)
     {
         if (Path.Count == 0)
         {
@@ -117,10 +116,13 @@ public class RecastNavigationComponent : StartupScript
             return;
         }
 
-        var targetPosition = Entity.Transform.WorldMatrix.TranslationVector;
+        var worldPosition = Entity.Transform.WorldMatrix.TranslationVector;
 
         var nextWaypointPosition = Path[0];
-        targetPosition = Vector3.MoveTo(targetPosition, nextWaypointPosition, Speed * deltaTime);
+        var rotation = Quaternion.LookRotation(Vector3.Normalize(Path[0] - worldPosition), Vector3.UnitY);
+        var targetPosition = Vector3.MoveTo(worldPosition, nextWaypointPosition, Speed * deltaTime);
+        var scale = Entity.Transform.Scale;
+
         if (targetPosition == nextWaypointPosition && Path.Count > 0)
         {
             // need to test if storing the index in Pathfinder would be faster than this.
@@ -128,37 +130,9 @@ public class RecastNavigationComponent : StartupScript
         }
 
         // Handle the scenario where the agent has a parent.
-        ParentToLocal(ref targetPosition, Entity);
+        Entity.Transform.Parent?.WorldToLocal(ref targetPosition, ref rotation, ref scale);
+
         Entity.Transform.Position = targetPosition;
-    }
-
-    /// <summary>
-    /// Recursively checks parents to convert a world position to a local position.
-    /// Returns the local possition if no parents exist.
-    /// </summary>
-    /// <param name="worldPosition"></param>
-    /// <param name="entity"></param>
-    private void ParentToLocal(ref Vector3 worldPosition, Entity entity)
-    {
-        var parent = entity.GetParent();
-
-        if (parent == null)
-        {
-            return;
-        }
-
-        worldPosition -= parent.Transform.WorldMatrix.TranslationVector;
-        ParentToLocal(ref worldPosition, parent);
-    }
-
-    private void Rotate()
-    {
-        if (Path.Count == 0)
-        {
-            return;
-        }
-
-        var position = Entity.Transform.WorldMatrix.TranslationVector;
-        Entity.Transform.Rotation = Quaternion.LookRotation(Vector3.Normalize(Path[0] - position), Vector3.UnitY);
+        Entity.Transform.Rotation = rotation;// Quaternion.Lerp(Entity.Transform.Rotation, rotation, .1f);
     }
 }
