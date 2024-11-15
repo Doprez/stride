@@ -79,8 +79,9 @@ public class CharacterComponent : BodyComponent, ISimulationUpdate, IContactEven
     /// <summary>
     /// This is called internally right before the physics simulation does a tick
     /// </summary>
+    /// <param name="sim"> The simulation this <see cref="ISimulationUpdate"/> is bound to, and the one currently updating </param>
     /// <param name="simTimeStep">The amount of time in seconds since the last simulation</param>
-    public virtual void SimulationUpdate(float simTimeStep)
+    public virtual void SimulationUpdate(BepuSimulation sim, float simTimeStep)
     {
         Awake = true; // Keep this body active
 
@@ -102,8 +103,9 @@ public class CharacterComponent : BodyComponent, ISimulationUpdate, IContactEven
     /// <summary>
     /// This is called internally right after the physics simulation does a tick
     /// </summary>
+    /// <param name="sim"> The simulation this <see cref="ISimulationUpdate"/> is bound to, and the one currently updating </param>
     /// <param name="simTimeStep">The amount of time in seconds since the last simulation</param>
-    public virtual void AfterSimulationUpdate(float simTimeStep)
+    public virtual void AfterSimulationUpdate(BepuSimulation sim, float simTimeStep)
     {
         var gravity = Simulation!.PoseGravity;
         IsGrounded = GroundTest(-gravity.ToNumeric()); // Checking for grounded after simulation ran to compute contacts as soon as possible after they are received
@@ -158,16 +160,15 @@ public class CharacterComponent : BodyComponent, ISimulationUpdate, IContactEven
     }
 
     bool IContactEventHandler.NoContactResponse => NoContactResponse;
-    void IContactEventHandler.OnStartedTouching<TManifold>(CollidableReference eventSource, CollidableReference other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) => OnStartedTouching(eventSource, other, ref contactManifold, flippedManifold, contactIndex, bepuSimulation);
-    void IContactEventHandler.OnStoppedTouching<TManifold>(CollidableReference eventSource, CollidableReference other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) => OnStoppedTouching(eventSource, other, ref contactManifold, flippedManifold, contactIndex, bepuSimulation);
+    void IContactEventHandler.OnStartedTouching<TManifold>(CollidableComponent eventSource, CollidableComponent other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) => OnStartedTouching(eventSource, other, ref contactManifold, flippedManifold, contactIndex, bepuSimulation);
+    void IContactEventHandler.OnStoppedTouching<TManifold>(CollidableComponent eventSource, CollidableComponent other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) => OnStoppedTouching(eventSource, other, ref contactManifold, flippedManifold, contactIndex, bepuSimulation);
 
 
     protected bool NoContactResponse => false;
 
     /// <inheritdoc cref="IContactEventHandler.OnStartedTouching{TManifold}"/>
-    protected virtual void OnStartedTouching<TManifold>(CollidableReference eventSource, CollidableReference other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) where TManifold : unmanaged, IContactManifold<TManifold>
+    protected virtual void OnStartedTouching<TManifold>(CollidableComponent eventSource, CollidableComponent other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) where TManifold : unmanaged, IContactManifold<TManifold>
     {
-        var otherCollidable = bepuSimulation.GetComponent(other);
         contactManifold.GetContact(contactIndex, out var contact);
 
         if (flippedManifold)
@@ -178,16 +179,15 @@ public class CharacterComponent : BodyComponent, ISimulationUpdate, IContactEven
         }
 
         contact.Offset = contact.Offset + Entity.Transform.WorldMatrix.TranslationVector.ToNumeric() + CenterOfMass.ToNumeric();
-        Contacts.Add((otherCollidable, contact));
+        Contacts.Add((other, contact));
     }
 
     /// <inheritdoc cref="IContactEventHandler.OnStoppedTouching{TManifold}"/>
-    protected virtual void OnStoppedTouching<TManifold>(CollidableReference eventSource, CollidableReference other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) where TManifold : unmanaged, IContactManifold<TManifold>
+    protected virtual void OnStoppedTouching<TManifold>(CollidableComponent eventSource, CollidableComponent other, ref TManifold contactManifold, bool flippedManifold, int contactIndex, BepuSimulation bepuSimulation) where TManifold : unmanaged, IContactManifold<TManifold>
     {
-        var otherCollidable = bepuSimulation.GetComponent(other);
         for (int i = Contacts.Count - 1; i >= 0; i--)
         {
-            if (Contacts[i].Source == otherCollidable)
+            if (Contacts[i].Source == other)
                 Contacts.SwapRemoveAt(i);
         }
     }
