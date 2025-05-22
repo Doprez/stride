@@ -30,7 +30,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\presentation\Stride.Core.Quantum\Stride.Core.Quantum.csproj" />
     <ProjectReference Include="..\Stride.Core.Assets\Stride.Core.Assets.csproj" />
   </ItemGroup>
 

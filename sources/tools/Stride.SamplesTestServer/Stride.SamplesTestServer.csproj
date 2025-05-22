@@ -16,10 +16,6 @@
     <ProjectReference Include="..\Stride.ConnectionRouter\Stride.ConnectionRouter.csproj" />
 
     <!-- Ensure GameStudio is built and referenced as a NuGet dependency, it shouldn't be used though -->
-    <ProjectReference Include="..\..\editor\Stride.GameStudio\Stride.GameStudio.csproj">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
