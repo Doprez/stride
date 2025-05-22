@@ -3,6 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Stride.Audio;
+using Stride.Core;
+using Stride.Engine;
+using Stride.Engine.Builder;
+using Stride.Engine.Processors;
+using Stride.Graphics.Font;
+using Stride.Profiling;
+using Stride.Rendering;
+using Stride.Rendering.Fonts;
+using Stride.Rendering.Sprites;
+using Stride.Streaming;
 
 namespace Leap.Extensions;
 public static class GameBuildExtensions

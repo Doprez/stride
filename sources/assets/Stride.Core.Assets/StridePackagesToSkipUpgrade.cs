@@ -10,7 +10,7 @@ public static class StridePackagesToSkipUpgrade
         "Stride.Awesome.Shaders",
         // In case other packages are added with the community namespace,
         "Stride.Community.",
-        "Stride.CommunityToolkit",
+        "Leap",
         "Stride.GraphX.WPF.Controls",
         "Stride.GNU.Gettext",
         "Stride.OpenTK",

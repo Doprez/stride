@@ -1,14 +1,58 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
 
   <PropertyGroup>
+    <StrideRuntime>true</StrideRuntime>
+    <StrideRuntimeNetStandardNoRuntimeIdentifiers>true</StrideRuntimeNetStandardNoRuntimeIdentifiers>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <Import Project="..\..\targets\Stride.props" />
+
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <StrideAssemblyProcessor>true</StrideAssemblyProcessor>
+    <StrideAssemblyProcessorOptions>--auto-module-initializer --serialization</StrideAssemblyProcessorOptions>
+    <StridePlatformDependent>true</StridePlatformDependent>
+    <StrideBuildTags>*</StrideBuildTags>
+    <StrideCodeAnalysis>true</StrideCodeAnalysis>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\engine\Stride.Games\Stride.Games.csproj" />
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\engine\Stride.Engine\Stride.Engine.csproj" />
+    <ProjectReference Include="..\..\engine\Stride.Games\Stride.Games.csproj" />
+    <ProjectReference Include="..\..\engine\Stride.Particles\Stride.Particles.csproj" />
+    <ProjectReference Include="..\..\engine\Stride.UI\Stride.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Extensions\EntityExtensions.GetComponents.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EntityExtensions.GetComponents.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Extensions\EntityExtensions.GetComponents.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EntityExtensions.GetComponents.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <Import Project="$(StrideSdkTargets)" />
 
 </Project>
