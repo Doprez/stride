@@ -9,7 +9,7 @@ using Stride.Graphics;
 
 namespace Stride.VirtualReality
 {
-    public class VRDeviceSystem : GameSystemBase
+    public class VRDeviceSystem : GameSystemBase, IService
     {
         private static bool physicalDeviceInUse;
 
@@ -19,6 +19,11 @@ namespace Stride.VirtualReality
 
             DrawOrder = -100;
             UpdateOrder = -100;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new VRDeviceSystem(services);
         }
 
         public VRApi[] PreferredApis;

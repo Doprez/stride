@@ -11,12 +11,17 @@ namespace Stride.Engine
     /// <summary>
     /// The input system updating the input manager exposed by <see cref="Game.Input"/>.
     /// </summary>
-    public sealed class InputSystem : GameSystemBase
+    public sealed class InputSystem : GameSystemBase, IService
     {
         public InputSystem(IServiceRegistry registry) : base(registry)
         {
             Enabled = true;
             Manager = new InputManager().DisposeBy(this);
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new InputSystem(services);
         }
 
         public InputManager Manager { get; }

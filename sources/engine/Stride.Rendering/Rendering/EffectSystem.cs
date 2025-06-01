@@ -59,6 +59,11 @@ namespace Stride.Rendering
         {
         }
 
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new EffectSystem(services);
+        }
+
         public override void Initialize()
         {
             base.Initialize();

@@ -10,7 +10,7 @@ using Stride.Graphics;
 
 namespace Stride.Profiling
 {
-    public class DebugTextSystem : GameSystemBase
+    public class DebugTextSystem : GameSystemBase, IService
     {
         internal struct DebugOverlayMessage
         {
@@ -30,6 +30,11 @@ namespace Stride.Profiling
 
             DrawOrder = 0xffffff;
             UpdateOrder = -100100; //before script
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new DebugTextSystem(services);
         }
 
         /// <summary>

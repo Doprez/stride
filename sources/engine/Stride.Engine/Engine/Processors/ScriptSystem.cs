@@ -18,7 +18,7 @@ namespace Stride.Engine.Processors
     /// <summary>
     /// The script system handles scripts scheduling in a game.
     /// </summary>
-    public sealed class ScriptSystem : GameSystemBase
+    public sealed class ScriptSystem : GameSystemBase, IService
     {
         private const long UpdateBit = 1L << 32;
 
@@ -50,6 +50,11 @@ namespace Stride.Engine.Processors
             Enabled = true;
             Scheduler = new Scheduler();
             Scheduler.ActionException += Scheduler_ActionException;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new ScriptSystem(services);
         }
 
         protected override void Destroy()

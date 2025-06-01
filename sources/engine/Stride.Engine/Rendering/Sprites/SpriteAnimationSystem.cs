@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using Stride.Animations;
 using Stride.Core;
@@ -12,7 +13,7 @@ namespace Stride.Rendering.Sprites
     /// <summary>
     /// A system in charge of animating the sprites 
     /// </summary>
-    public class SpriteAnimationSystem : GameSystemBase
+    public class SpriteAnimationSystem : GameSystemBase, IService
     {
         private readonly HashSet<SpriteComponent> playingSprites = new HashSet<SpriteComponent>();
         private readonly HashSet<SpriteComponent> spritesToStop = new HashSet<SpriteComponent>(); 
@@ -30,6 +31,11 @@ namespace Stride.Rendering.Sprites
             : base(registry)
         {
             DefaultFramesPerSecond = 30;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new SpriteAnimationSystem(services);
         }
 
         public override void Initialize()

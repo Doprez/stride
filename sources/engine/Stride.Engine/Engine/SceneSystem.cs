@@ -17,7 +17,7 @@ namespace Stride.Engine
     /// <summary>
     /// The scene system handles the scenes of a game.
     /// </summary>
-    public class SceneSystem : GameSystemBase
+    public class SceneSystem : GameSystemBase, IService
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("SceneSystem");
 
@@ -38,6 +38,11 @@ namespace Stride.Engine
             Enabled = true;
             Visible = true;
             GraphicsCompositor = new GraphicsCompositor();
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new SceneSystem(services);
         }
 
         /// <summary>

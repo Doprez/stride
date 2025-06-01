@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
+using System;
 using Stride.Core;
 using Stride.Core.IO;
 using Stride.Games;
@@ -11,7 +12,7 @@ namespace Stride.Rendering.Fonts
     /// <summary>
     /// The game system in charge of calling <see cref="FontSystem"/>.
     /// </summary>
-    public class GameFontSystem : GameSystemBase
+    public class GameFontSystem : GameSystemBase, IService
     {
         public FontSystem FontSystem { get; private set; }
 
@@ -20,6 +21,11 @@ namespace Stride.Rendering.Fonts
         {
             Visible = true;
             FontSystem = new FontSystem();
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new GameFontSystem(services);
         }
 
         public override void Draw(GameTime gameTime)

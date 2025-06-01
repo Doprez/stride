@@ -12,7 +12,7 @@ using Stride.Rendering;
 
 namespace Stride.Physics.Engine
 {
-    public class PhysicsShapesRenderingService : GameSystem
+    public class PhysicsShapesRenderingService : GameSystem, IService
     {
         private GraphicsDevice graphicsDevice;
 
@@ -81,6 +81,11 @@ namespace Stride.Physics.Engine
 
         public PhysicsShapesRenderingService(IServiceRegistry registry) : base(registry)
         {
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new PhysicsShapesRenderingService(services);
         }
 
         public Entity CreateDebugEntity(PhysicsComponent component, RenderGroup renderGroup, bool alwaysAddOffset = false)

@@ -1,6 +1,7 @@
 // Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Stride.Core;
@@ -10,7 +11,7 @@ using Stride.Games;
 
 namespace Stride.Physics
 {
-    public class Bullet2PhysicsSystem : GameSystem, IPhysicsSystem
+    public class Bullet2PhysicsSystem : GameSystem, IPhysicsSystem, IService
     {
         private class PhysicsScene
         {
@@ -32,6 +33,11 @@ namespace Stride.Physics
             UpdateOrder = -1000; //make sure physics runs before everything
 
             Enabled = true; //enabled by default
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new Bullet2PhysicsSystem(services);
         }
 
         private PhysicsSettings physicsConfiguration;

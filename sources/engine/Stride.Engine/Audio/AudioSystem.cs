@@ -14,7 +14,7 @@ namespace Stride.Audio
     /// The Audio System.
     /// It creates an underlying instance of <see cref="AudioEngine"/>.
     /// </summary>
-    public class AudioSystem : GameSystemBase, IAudioEngineProvider
+    public class AudioSystem : GameSystemBase, IAudioEngineProvider, IService
     {
         private static readonly object AudioEngineStaticLock = new object();
         private static AudioEngine audioEngineSingleton;
@@ -27,6 +27,11 @@ namespace Stride.Audio
             : base(registry)
         {
             Enabled = true;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new AudioSystem(services);
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ using Stride.Games;
 
 namespace Stride.BepuPhysics.Systems;
 
-internal class PhysicsGameSystem : GameSystemBase
+internal class PhysicsGameSystem : GameSystemBase, IService
 {
     private BepuConfiguration _bepuConfiguration;
 
@@ -22,6 +22,12 @@ internal class PhysicsGameSystem : GameSystemBase
         {
             bepuSim.ResetSoftStart();
         }
+    }
+
+    public static IService NewInstance(IServiceRegistry services)
+    {
+        var configuration = BepuConfiguration.NewInstance(services) as BepuConfiguration;
+        return new PhysicsGameSystem(configuration, services);
     }
 
     public override void Update(GameTime time)

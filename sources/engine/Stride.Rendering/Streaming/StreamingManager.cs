@@ -26,7 +26,7 @@ namespace Stride.Streaming
     /// </summary>
     /// <seealso cref="Stride.Games.GameSystemBase" />
     /// <seealso cref="Stride.Graphics.Data.ITexturesStreamingProvider" />
-    public class StreamingManager : GameSystemBase, IStreamingManager, ITexturesStreamingProvider
+    public class StreamingManager : GameSystemBase, IStreamingManager, ITexturesStreamingProvider, IService
     {
         private readonly List<StreamableResource> resources = new List<StreamableResource>(512);
         private readonly ConcurrentDictionary<object, StreamableResource> resourcesLookup = new ConcurrentDictionary<object, StreamableResource>();
@@ -100,6 +100,11 @@ namespace Stride.Streaming
 
             Enabled = true;
             EnabledChanged += OnEnabledChanged;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new StreamingManager(services);
         }
 
         /// <inheritdoc />

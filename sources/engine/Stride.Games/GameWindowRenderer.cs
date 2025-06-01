@@ -31,7 +31,7 @@ namespace Stride.Games
     /// <summary>
     /// A GameSystem that allows to draw to another window or control. Currently only valid on desktop with Windows.Forms.
     /// </summary>
-    public class GameWindowRenderer : GameSystemBase
+    public class GameWindowRenderer : GameSystemBase, IService
     {
         private PixelFormat preferredBackBufferFormat;
         private int preferredBackBufferHeight;
@@ -54,6 +54,11 @@ namespace Stride.Games
         {
             GameContext = gameContext;
             preferredOutputColorSpace = ColorSpaceType.RgbFullG22NoneP709;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            throw new NotImplementedException("Need to get the GameContext for the constructor.");
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Stride.Navigation
     /// <summary>
     /// System that handles building of navigation meshes at runtime
     /// </summary>
-    public class DynamicNavigationMeshSystem : GameSystem
+    public class DynamicNavigationMeshSystem : GameSystem, IService
     {
         /// <summary>
         /// If <c>true</c>, this will automatically rebuild on addition/removal of static collider components
@@ -63,6 +63,11 @@ namespace Stride.Navigation
         {
             Enabled = false;
             EnabledChanged += OnEnabledChanged;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new DynamicNavigationMeshSystem(services);
         }
 
         /// <summary>

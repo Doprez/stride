@@ -16,7 +16,7 @@ using Color = Stride.Core.Mathematics.Color;
 
 namespace Stride.Profiling
 {
-    public class GameProfilingSystem : GameSystemBase
+    public class GameProfilingSystem : GameSystemBase, IService
     {
         private static readonly ProfilingKey UpdateStringsKey = new ProfilingKey($"{nameof(GameProfilingSystem)}.UpdateStrings");
 
@@ -99,6 +99,11 @@ namespace Stride.Profiling
             DrawOrder = 0xfffffe;
 
             gcProfiler = new GcProfiling();
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new GameProfilingSystem(services);
         }
 
         private readonly Stopwatch dumpTiming = Stopwatch.StartNew();

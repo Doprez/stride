@@ -21,7 +21,7 @@ namespace Stride.Games.Testing
     /// This game system will be automatically injected by the Module initialized when included in the build processing via msbuild
     /// The purpose is to simulate events within the game process and report errors and such to the GameTestingClient
     /// </summary>
-    internal class GameTestingSystem : GameSystemBase
+    internal class GameTestingSystem : GameSystemBase, IService
     {
         public static bool Initialized;
 
@@ -44,6 +44,11 @@ namespace Stride.Games.Testing
             input.Sources.Add(inputSourceSimulated = new InputSourceSimulated());
             keyboardSimulated = inputSourceSimulated.AddKeyboard();
             mouseSimulated = inputSourceSimulated.AddMouse();
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new GameTestingSystem(services);
         }
 
         public override async void Initialize()

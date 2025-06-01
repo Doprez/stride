@@ -9,7 +9,7 @@ using Stride.Games;
 
 namespace Stride.Graphics.Regression
 {
-    public class FrameGameSystem : GameSystemBase
+    public class FrameGameSystem : GameSystemBase, IService
     {
         #region Private members
 
@@ -86,6 +86,11 @@ namespace Stride.Graphics.Regression
             drawMethods = new List<SetupMethodInfo>();
             screenshotFrames = new Dictionary<int, string>();
             lastFrame = -1;
+        }
+
+        public static IService NewInstance(IServiceRegistry services)
+        {
+            return new FrameGameSystem(services);
         }
 
         #endregion
