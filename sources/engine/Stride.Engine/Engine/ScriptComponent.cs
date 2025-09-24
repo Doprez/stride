@@ -219,7 +219,19 @@ namespace Stride.Engine
         /// </summary>
         /// <value>The streaming system.</value>
         [DataMemberIgnore]
-        public StreamingManager Streaming { get; private set; }
+        public StreamingManager Streaming 
+        { 
+            get
+            {
+                streamingManager ??= Services.GetSafeServiceAs<StreamingManager>();
+                return streamingManager;
+            }
+            private set
+            {
+                streamingManager = value;
+            }
+        }
+        private StreamingManager streamingManager;
 
         [DataMemberIgnore]
         protected Logger Log
