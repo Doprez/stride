@@ -8,6 +8,7 @@ using Stride.Core.Serialization.Contents;
 
 namespace Stride.Physics
 {
+    [Obsolete("This may be removed or changed as I dont see the need for a infinite plane.")]
     [ContentSerializer(typeof(DataContentSerializer<StaticPlaneColliderShapeDesc>))]
     [DataContract("StaticPlaneColliderShapeDesc")]
     [Display(50, "Infinite Plane")]

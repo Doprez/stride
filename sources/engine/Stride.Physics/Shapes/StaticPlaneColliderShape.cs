@@ -10,6 +10,7 @@ using Stride.Rendering;
 
 namespace Stride.Physics
 {
+    [Obsolete("This may be removed or changed as I dont see the need for a infinite plane.")]
     public class StaticPlaneColliderShape : ColliderShape
     {
         public readonly Vector3 Normal;
