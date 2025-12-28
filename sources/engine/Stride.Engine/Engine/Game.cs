@@ -5,11 +5,15 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using ServiceWire;
 using Stride.Audio;
 using Stride.Core;
 using Stride.Core.Diagnostics;
 using Stride.Core.IO;
 using Stride.Core.Mathematics;
+using Stride.Core.Reflection;
+using Stride.Core.Serialization;
+using Stride.Core.Serialization.Contents;
 using Stride.Core.Storage;
 using Stride.Engine.Design;
 using Stride.Engine.Processors;
@@ -247,6 +251,32 @@ namespace Stride.Engine
                 GlobalLogger.GlobalMessageLogged -= logListener;
         }
 
+        private string FindGameSettingsAsset()
+        {
+            var contentManager = Services.GetSafeServiceAs<IContentManager>();
+            var content = contentManager as ContentManager;
+
+            var virtualFiles = content.FileProvider.ListFiles("", "*", Stride.Core.IO.VirtualSearchOption.AllDirectories);
+
+            foreach (var file in virtualFiles)
+            {
+                using var stream = content.FileProvider.OpenStream(file, VirtualFileMode.Open, VirtualFileAccess.Read);
+                var streamReader = new BinarySerializationReader(stream);
+                var chunkHeader = ChunkHeader.Read(streamReader);
+                if (chunkHeader == null!)
+                    continue;
+
+                if (typeof(GameSettings) != AssemblyRegistry.GetType(chunkHeader.Type))
+                    continue;
+
+                // ensure the first found GameSettings file is used.
+                Log.Info($"Using GameSettings asset at '{file}'");
+                return file;
+            }
+
+            return null;
+        }
+
         /// <inheritdoc/>
         protected override void PrepareContext()
         {
@@ -259,9 +289,9 @@ namespace Stride.Engine
                 ((DatabaseFileProviderService)Services.GetService<IDatabaseFileProviderService>()).FileProvider = databaseFileProvider;
 
                 var renderingSettings = new RenderingSettings();
-                if (Content.Exists(GameSettings.AssetUrl))
+                if (FindGameSettingsAsset() is { } gameSettingsFile)
                 {
-                    Settings = Content.Load<GameSettings>(GameSettings.AssetUrl);
+                    Settings = Content.Load<GameSettings>(gameSettingsFile);
 
                     renderingSettings = Settings.Configurations.Get<RenderingSettings>();
 
