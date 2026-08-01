@@ -46,6 +46,9 @@ namespace Stride.Assets.Presentation.AssemblyReloading
                 return;
 
             loadedAssembly.Assembly = assembly;
+            // Force the serialization module constructor to run so the assembly's generated serializers
+            // are discovered before RegisterSerializationAssembly(Assembly), which is otherwise a no-op.
+            ModuleRuntimeHelpers.RunModuleConstructor(assembly.ManifestModule);
             AssemblyRegistry.Register(assembly, AssemblyCommonCategories.Assets);
             DataSerializerFactory.RegisterSerializationAssembly(assembly);
             package.LoadedAssemblies.Add(loadedAssembly);
